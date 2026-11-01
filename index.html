@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inch By Centimeter — Technology R&amp;D</title>
+  <meta name="description" content="Inch By Centimeter is a technology R&amp;D company working to make machines truly useful in the real world.">
+  <meta name="theme-color" content="#151513">
+  <link rel="canonical" href="https://inxcm.com/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Inch By Centimeter">
+  <meta property="og:title" content="Inch By Centimeter">
+  <meta property="og:description" content="Technology R&amp;D for machines that work in the real world.">
+  <meta property="og:url" content="https://inxcm.com/">
+  <meta property="og:image" content="https://inxcm.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --ground: #151513;
+      --ground-raised: #1e1e1b;
+      --line: #383833;
+      --text: #f1efe7;
+      --muted: #aeaba1;
+      --tape: #f6c61b;
+      --tape-ink: #16150f;
+      --tape-red: #c8281e;
+      --gutter: clamp(16px, 4vw, 48px);
+      --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--ground);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    :focus-visible { outline: 2px solid var(--tape); outline-offset: 3px; }
+
+    .wrap {
+      max-width: 1240px;
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .label {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .8125rem;
+      letter-spacing: .02em;
+    }
+
+    /* Header */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      padding-block: 24px;
+    }
+
+    .wordmark {
+      font-family: var(--mono);
+      font-size: 1.125rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .wordmark span { color: var(--tape); }
+
+    .site-header nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+    }
+
+    .site-header nav a {
+      font-family: var(--mono);
+      font-size: .875rem;
+      text-underline-offset: 4px;
+    }
+
+    /* Hero */
+    .hero { padding-block: clamp(48px, 9vw, 112px) clamp(40px, 6vw, 72px); }
+
+    .hero h1 {
+      max-width: 13ch;
+      margin: 20px 0 0;
+      font-size: clamp(3rem, 10.5vw, 8.25rem);
+      font-stretch: 75%;
+      font-weight: 700;
+      line-height: .94;
+      letter-spacing: -.015em;
+      text-wrap: balance;
+    }
+
+    .hero-lede {
+      max-width: 46ch;
+      margin: clamp(24px, 3vw, 36px) 0 0;
+      color: var(--muted);
+      font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+      line-height: 1.45;
+    }
+
+    /* Tape */
+    .tape {
+      position: relative;
+      height: 124px;
+      background: var(--tape);
+      box-shadow: 0 12px 28px rgb(0 0 0 / .4);
+      cursor: crosshair;
+      touch-action: pan-y;
+      user-select: none;
+    }
+
+    .tape canvas { display: block; width: 100%; height: 100%; }
+
+    .tape-marker {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 1px;
+      background: var(--tape-red);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tape-readout {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      padding: 4px 9px;
+      background: var(--text);
+      color: var(--ground);
+      font-family: var(--mono);
+      font-size: .8125rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tape.is-measuring .tape-marker,
+    .tape.is-measuring .tape-readout { opacity: 1; }
+
+    .tape-note { padding-block: 14px 0; }
+
+    /* Sections */
+    .section { padding-block: clamp(72px, 10vw, 128px) 0; }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      margin-bottom: clamp(32px, 4vw, 48px);
+    }
+
+    h2 {
+      max-width: 20ch;
+      margin: 0;
+      font-size: clamp(2rem, 4.6vw, 3.5rem);
+      font-stretch: 75%;
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -.01em;
+      text-wrap: balance;
+    }
+
+    /* Vision */
+    .vision h2 {
+      max-width: 19ch;
+      margin-top: 12px;
+      font-size: clamp(2.5rem, 6.4vw, 5.25rem);
+    }
+
+    .vision-body {
+      display: grid;
+      gap: 16px;
+      max-width: 56ch;
+      margin: clamp(32px, 4vw, 48px) 0 0 auto;
+      color: var(--muted);
+      font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+    }
+
+    .vision-body p { margin: 0; }
+
+    .vision-body strong { color: var(--tape); font-weight: 700; }
+
+    /* Principles */
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .principle { padding: clamp(22px, 3vw, 32px); background: var(--ground-raised); }
+
+    .principle h3 { margin: 0 0 10px; font-size: 1.25rem; font-weight: 600; line-height: 1.2; }
+
+    .principle p { margin: 0; color: var(--muted); }
+
+    /* Team */
+    .team {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 48px clamp(32px, 6vw, 80px);
+    }
+
+    .member-photo {
+      display: block;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 24px;
+      border: 3px solid var(--tape);
+      border-radius: 50%;
+    }
+
+    .member-initials {
+      display: grid;
+      place-items: center;
+      background: var(--ground-raised);
+      color: var(--tape);
+      font-family: var(--mono);
+      font-size: 3rem;
+      font-weight: 500;
+    }
+
+    .member h3 {
+      margin: 0;
+      font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+      font-stretch: 75%;
+      font-weight: 700;
+      line-height: 1.05;
+    }
+
+    .member-role { margin-top: 12px; color: var(--text); font-size: 1rem; }
+
+    .member-bio { max-width: 56ch; margin: 16px 0; color: var(--muted); }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 20px;
+      margin: 0;
+      padding: 0;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .875rem;
+      list-style: none;
+    }
+
+    .links a { text-underline-offset: 4px; }
+
+    .links a:hover { color: var(--tape); }
+
+    .member .links { margin-top: 14px; }
+
+    /* Status and contact */
+    .contact {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 32px clamp(32px, 6vw, 80px);
+      align-items: end;
+      margin-top: clamp(72px, 10vw, 128px);
+      padding-block: clamp(40px, 6vw, 72px);
+      border-top: 4px solid var(--tape);
+    }
+
+    .contact p.body { max-width: 44ch; margin: 0 0 16px; color: var(--muted); }
+
+    .mail {
+      display: inline-block;
+      color: var(--tape);
+      font-family: var(--mono);
+      font-size: clamp(1.0625rem, 2vw, 1.375rem);
+      font-weight: 500;
+      text-underline-offset: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .site-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px 24px;
+      padding-block: 24px 32px;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 820px) {
+      .site-header nav { gap: 6px 14px; }
+      .vision-body { margin-left: 0; }
+      .principles, .team, .contact { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Inch By Centimeter, home">in<span>×</span>cm</a>
+      <!-- TODO: replace the # stubs with real URLs. -->
+      <nav aria-label="Primary">
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="https://github.com/inxcm">GitHub</a>
+        <a href="#">LinkedIn</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="label">Inch By Centimeter / Technology R&amp;D</p>
+        <h1>The real world moves inch by centimeter.</h1>
+        <p class="hero-lede">We're a technology research and development company working out what it takes for machines to be truly useful, out in the world and to the people in it.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="tape" aria-hidden="true">
+    <canvas></canvas>
+    <div class="tape-marker"></div>
+    <div class="tape-readout"></div>
+  </div>
+
+  <div class="wrap">
+    <p class="label tape-note">1 in = 2.54 cm. Move across the tape to measure.</p>
+
+    <section class="section vision" aria-labelledby="vision-heading">
+      <p class="label">Why we exist</p>
+      <h2 id="vision-heading">Software changed what people can know. The next change is in what people can do.</h2>
+      <div class="vision-body">
+        <p>Many of the hardest problems left are physical. The world is heavy, fragile and unpredictable, and the people in it deserve technology that meets them there.</p>
+        <p>We're working toward machines that fit quietly into the places people work and live, and that give them back time, strength and independence. It won't happen all at once. It will happen <strong>inch by centimeter</strong>.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="approach-heading">
+      <div class="section-head">
+        <p class="label">How we work</p>
+        <h2 id="approach-heading">Small increments, measured honestly.</h2>
+      </div>
+      <div class="principles">
+        <article class="principle">
+          <h3>Start in the real world</h3>
+          <p>Good engineering begins where it will be used, not on a slide. The problem sets the design.</p>
+        </article>
+        <article class="principle">
+          <h3>Measure twice</h3>
+          <p>Machines don't care about intentions. We test early and trust the data.</p>
+        </article>
+        <article class="principle">
+          <h3>Build for the thousandth</h3>
+          <p>One that works is a demo. We think about the thousandth from the first.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="team-heading">
+      <div class="section-head">
+        <p class="label" id="team-heading">Team</p>
+      </div>
+      <div class="team">
+        <article class="member">
+          <img class="member-photo" src="founder.jpg" width="700" height="700" alt="Sherin Ann Thomas, smiling, seated at a desk">
+          <h3>Sherin Ann Thomas</h3>
+          <p class="label member-role">Technical Founder and CEO | Ex-Microsoft, Ex-Adobe</p>
+          <p class="member-bio">An engineer with a passion for robotics and for helping people through better accessibility. Sherin built Windows Voice Access and contributed to Narrator, and started Inch By Centimeter to bring that same focus to the physical world.</p>
+          <a class="mail" href="mailto:sherin@inxcm.com">sherin@inxcm.com</a>
+          <ul class="links">
+            <li><a href="https://www.linkedin.com/in/sherinannthomas1/" aria-label="Sherin Ann Thomas on LinkedIn">LinkedIn</a></li>
+            <li><a href="https://github.com/sherinann" aria-label="Sherin Ann Thomas on GitHub">GitHub</a></li>
+          </ul>
+        </article>
+        <article class="member">
+          <div class="member-photo member-initials" aria-hidden="true">TK</div>
+          <h3>Thomas Kollinal</h3>
+          <p class="label member-role">Principal Engineer</p>
+          <p class="member-bio">An experienced low-level software engineer working across C++, operating systems and browsers.</p>
+          <a class="mail" href="mailto:thomas@inxcm.com">thomas@inxcm.com</a>
+          <!-- TODO: replace the # stubs with real URLs. -->
+          <ul class="links">
+            <li><a href="#" aria-label="Thomas Kollinal on LinkedIn">LinkedIn</a></li>
+            <li><a href="#" aria-label="Thomas Kollinal on GitHub">GitHub</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-heading">
+      <div>
+        <h2 id="contact-heading">Working on a real-world problem?</h2>
+      </div>
+      <div>
+        <p class="body">Get in touch, and let's figure out how we can work on it together.</p>
+        <a class="mail" href="mailto:hello@inxcm.com">hello@inxcm.com</a>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p class="label">© <span id="year">2026</span> Inch By Centimeter</p>
+      <p class="label">inxcm.com</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var PX_PER_INCH = 96;
+      var PX_PER_CM = PX_PER_INCH / 2.54;
+      var SCROLL_PULL = 0.5;
+
+      var tape = document.querySelector('.tape');
+      var canvas = tape.querySelector('canvas');
+      var marker = tape.querySelector('.tape-marker');
+      var readout = tape.querySelector('.tape-readout');
+      var ctx = canvas.getContext('2d');
+      var styles = getComputedStyle(document.documentElement);
+      var ink = styles.getPropertyValue('--tape-ink');
+      var red = styles.getPropertyValue('--tape-red');
+      var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      var pending = false;
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      function offset() {
+        return reduced.matches ? 0 : window.scrollY * SCROLL_PULL;
+      }
+
+      function inchTick(i) {
+        if (i % 16 === 0) return 36;
+        if (i % 8 === 0) return 27;
+        if (i % 4 === 0) return 20;
+        if (i % 2 === 0) return 14;
+        return 9;
+      }
+
+      function draw() {
+        pending = false;
+        var width = tape.clientWidth;
+        var height = tape.clientHeight;
+        var dpr = window.devicePixelRatio || 1;
+        var shift = offset();
+        var i, x, tick;
+
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = ink;
+
+        // Inches along the top edge, in sixteenths.
+        var step = PX_PER_INCH / 16;
+        for (i = Math.floor(shift / step); (x = i * step - shift) < width + step; i++) {
+          ctx.fillRect(Math.round(x * dpr) / dpr, 0, i % 16 === 0 ? 2 : 1, inchTick(i));
+        }
+
+        // Centimeters along the bottom edge, in millimeters.
+        step = PX_PER_CM / 10;
+        for (i = Math.floor(shift / step); (x = i * step - shift) < width + step; i++) {
+          tick = i % 10 === 0 ? 30 : i % 5 === 0 ? 21 : 11;
+          ctx.fillRect(Math.round(x * dpr) / dpr, height - tick, i % 10 === 0 ? 2 : 1, tick);
+        }
+
+        ctx.textBaseline = 'alphabetic';
+        ctx.font = '500 17px "IBM Plex Mono", monospace';
+        for (i = Math.floor(shift / PX_PER_INCH); (x = i * PX_PER_INCH - shift) < width + 40; i++) {
+          if (i === 0) continue;
+          ctx.fillStyle = i % 12 === 0 ? red : ink;
+          ctx.fillText(i, x + 6, 56);
+        }
+
+        ctx.fillStyle = ink;
+        ctx.font = '500 12px "IBM Plex Mono", monospace';
+        for (i = Math.floor(shift / PX_PER_CM); (x = i * PX_PER_CM - shift) < width + 40; i++) {
+          if (i === 0) continue;
+          ctx.fillText(i, x + 5, height - 16);
+        }
+      }
+
+      function schedule() {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(draw);
+      }
+
+      function gcd(a, b) {
+        return b ? gcd(b, a % b) : a;
+      }
+
+      function formatInches(sixteenths) {
+        var whole = Math.floor(sixteenths / 16);
+        var part = sixteenths % 16;
+        if (!part) return String(whole);
+        var d = gcd(part, 16);
+        return (whole ? whole + ' ' : '') + part / d + '/' + 16 / d;
+      }
+
+      function measure(event) {
+        var bounds = tape.getBoundingClientRect();
+        var x = event.clientX - bounds.left;
+        var sixteenths = Math.max(0, Math.round((x + offset()) / (PX_PER_INCH / 16)));
+        var snapped = sixteenths * (PX_PER_INCH / 16) - offset();
+
+        readout.textContent = formatInches(sixteenths) + ' in = ' + (sixteenths / 16 * 2.54).toFixed(2) + ' cm';
+        marker.style.transform = 'translateX(' + snapped + 'px)';
+        var left = Math.min(Math.max(8, snapped - readout.offsetWidth / 2), bounds.width - readout.offsetWidth - 8);
+        readout.style.transform = 'translateX(' + left + 'px)';
+        tape.classList.add('is-measuring');
+      }
+
+      tape.addEventListener('pointerdown', measure);
+      tape.addEventListener('pointermove', measure);
+      tape.addEventListener('pointerleave', function () {
+        tape.classList.remove('is-measuring');
+      });
+
+      window.addEventListener('scroll', schedule, { passive: true });
+      new ResizeObserver(schedule).observe(tape);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+      draw();
+    })();
+  </script>
+</body>
+</html>
